@@ -1,6 +1,6 @@
 #  Robot SUMO para el grupo de robotica de la UTN-FRP
 ##  Objetivos del proyecto
-+ Incentinvar el autoaprendizaje e investigacion
++ Incentivar el auto-aprendizaje e investigacion
 + Diseñar/Modelar un chasis que se adapte a las necesidades y lograr imprimirlo en 3D
 + Progrmar un Software que logre:
     + Identificar un objetivo frente de si
