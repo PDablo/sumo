@@ -13,3 +13,8 @@
 ## Sobre el autor
   Soy un estudiante de ingenieria en electronica, muy entusiasta por la robotica y la integracion SW-HW.
   Llevo en paralelo un proyecto similar pero con modificaciones que permitirian al robot identificar el espacio y, en un futuro identificarse a si mismo dentro del espacio.
+
+---
+
+## Contacto
+Si te interesa colaborar o trabajar en conjunto con este o proyecto similar, podemos hablar por telegram @PDablo07
