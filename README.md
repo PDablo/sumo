@@ -10,6 +10,29 @@
 
 ---
 
+##    Proyecto
+###    Software
+
+_24/06/2024_
+
+Aun sigo probando como utilizar el sensor SHARP con arduino, en una primera instancia solo me da lecturas erroneas.
+
+###    Hardware
+
+Personalmente trabajo con Fusion360 para el diseño del chasis, utilizando una licencia educativa; aunque lo ideal seria migrar a FreeCAD para poder trabaja con Software Libre.
+Elementos:
++ Arduino UNO
++ Driver L298D
++ Sensor SHARp 2Y0A02
++ Sensores CNY70
++ Celdas 18650
+
+_24/06/2024_
+
+El archivo .F3d contiene la idea principal a llevar adelante.
+
+---
+
 ## Sobre el autor
   Soy un estudiante de ingenieria en electronica, muy entusiasta por la robotica y la integracion SW-HW.
   Llevo en paralelo un proyecto similar pero con modificaciones que permitirian al robot identificar el espacio y, en un futuro identificarse a si mismo dentro del espacio.
