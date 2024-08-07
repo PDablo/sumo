@@ -1,85 +1,85 @@
-// Definir pines del sensor y motores
-const int sensorPin = A0;       // ENTRADA UTILIZADA PARA LA LECTURA DEL SENSOR SHARP
-//const int sensorPin = A1;       // ENTRADA UTILIZADA PARA LA LECTURA DEL SENSOR SHARP
-/*!
- * A0/A1 es el pin que se utiliza para la lectura de informacion
- * en este caso:
- *  amarillo = celeste --> dato
- *  rojo = naranja --> 5V
- *  negro = naranja claro --> GND
- */
-const int motorLeftPin1 = 2;    // PIN PARA CONTROLAR EL MOTOR IZQUIERDO
-const int motorRightPin1 = 3;   // PIN PARA CONTROLAR EL MOTOR IZQUIERDO
-const int motorTierra = 4;
-/*!
- * Los siguientes controles podrian ser utilizados para controlar
- * la velocidad de los motores, no seria lo optimo.
- */
-//const int enA = 9;              // PIN PARA PROPORCIONAR VELOCIDAD AL MOTOR
-//const int enB = 10;             // PIN PARA PROPORCIONAR VELOCIDAD AL MOTOR
+//---SENSORES FRONTALES---//
+#define sensorLeftPin A0      //PIN ANALOGICO DE LECTURA IZQUIERDO
+#define sensorRightPin A1     //PIN ANALOGICO DE LECTURA DERECHA
 
-// Umbral de distancia (ajustar según sea necesario)
-const int thresholdMin = 0;    // DISTANCIA MINIMA EN CM
-const int thresholdMax = 20;    // DISTANCIA MINIMA EN CM
+//---SENSORES INFERIORES---//
+#define sensorLeftF A2        //PIN ANALOGICO DE LECTURA SENSOR INFERIOR FRONTAL IZQ
+#define sensorRightF A3       //PIN ANALOGICO DE LECTURA SENSOR INFERIOR FRONTAL DER
+#define sensorBack A4         //PIN ANALOGICO DE LECTURA SENSOR INFERIOR TRASERO
 
-// COMUNICACION
-const int COMUN = 9600;
+//---MOTORES---//
+#define motorLeftPin 2       //PIN DIGITAL PARA CONTROL DE MOTOR IZQUIERDO
+#define motorRightPin 3      //PIN DIGITAL PARA CONTROL DE MOTOR DERECHO
 
 void setup() {
-  // CONFIGURAR PINES DE MOTORES COMO SALIDAS
-  pinMode(motorLeftPin1, OUTPUT);
-  pinMode(motorRightPin1, OUTPUT);
-  pinMode(motorTierra, OUTPUT);
-//  pinMode(enA, OUTPUT);
-//  pinMode(enB, OUTPUT);
+  //inicio de comunicacion serial 
+  Serial.begin(9600);
+  //---DEFINICION DE PINES PARA SESNORES---//
+  pinMode(sensorLeftPin, INPUT);
+  pinMode(sensorRightPin, INPUT);
+  pinMode(sensorLeftF, INPUT);
+  pinMode(sensorRightF, INPUT);
+  pinMode(sensorBack, INPUT);
 
-  // INICIAR COMUNICACION SERIE
-  Serial.begin(COMUN);
+  //---DEFINICION DE PINES PARA MOTORES---//
+  pinMode(motorLeftPin, OUTPUT);
+  pinMode(motorRightPin, OUTPUT);
+  
 }
 
-void loop() {
-  // Leer valor del sensor
-  int sensorValue = analogRead(sensorPin);
-  // Convertir el valor analógico a distancia en cm (calibrar esta fórmula)
-  int distance = map(sensorValue, 0, 1023, 150, 10);
-  
-  // Imprimir la distancia medida
-  Serial.print("Distancia: ");
-  Serial.print(distance);
-  Serial.println(" cm");
+/*!
+ * A0 y A1 es el pin que se utiliza para la lectura de informacion
+ * en este caso:
+ *  amarillo --> dato
+ *  rojo --> 5V
+ *  negro --> GND
+ */
 
-  // Verificar si el objeto está dentro del rango deseado
-  if (distance >= thresholdMin && distance <= thresholdMax) {
-    // Mover hacia adelante
-    moveForward();
-  } else {
-    // Detener motores
-    stopMotors();
+
+float medicion (int sensorPin, int n){
+  long suma = 0;
+  for(int i =0; i<n; i++){
+    suma +=analogRead(sensorPin);
   }
-
-  delay(100); // Pequeña pausa para estabilizar la lectura
+  float promedio = suma/n;
+  float distancia = 17569.7 * pow(promedio, -1.2062);
+  return(distancia);
 }
 
-void moveForward() {
-  digitalWrite(motorLeftPin1, HIGH);
-  Serial.print("Motor IZQ: ");
-  Serial.print(motorLeftPin1);
-  Serial.println("");
-  
-  digitalWrite(motorRightPin1, HIGH);
-  Serial.print("Motor DER: ");
-  Serial.print(motorRightPin1);
-  Serial.println("");
+void center( int vR, int vL){
+  if (vL < vR) {
+    digitalWrite(motorLeftPin, HIGH);
+    digitalWrite(motorRightPin, LOW);
+  } else if (vL > vR) {
+    digitalWrite(motorLeftPin, LOW);
+    digitalWrite(motorRightPin, HIGH);
+  } else {
+    digitalWrite(motorLeftPin, HIGH);
+    digitalWrite(motorRightPin, HIGH);
+  }
 }
+/*
+ * Esta funcion es la que se va a encargar de desplazar el sumo dentro del tablero para buscar un objetivo
+void search(){
+  do{
+    digitalWrite(motorLeftPin, HIGH);
+    digitalWrite(motorRightPin, HIGH);
+  }while(
+}
+*/
+void loop() {
+  int cmLeft = medicion(sensorLeftPin, 20); // funcion   que tomara 20 muestras
+  int cmRight = medicion(sensorRightPin, 20); // funcion   que tomara 20 muestras
+  Serial.print("Distancia IZQ: ");
+  Serial.print(cmLeft);
+  Serial.println(" u");
 
-void stopMotors() {
-  digitalWrite(motorLeftPin1, LOW);
-  Serial.print("Motor IZQ: ");
-  Serial.print(motorLeftPin1);
-  Serial.println("");
-  
-  digitalWrite(motorRightPin1, LOW);
-  Serial.print("Motor DER: ");
-  Serial.print(motorRightPin1);
-  Serial.println("");
+  Serial.print("Distancia DER: ");
+  Serial.print(cmRight);
+  Serial.println(" u");
+  if(cmRight < 20 || cmLeft <20)    // pregunta si hay un objeto enfrente
+    center(cmRight, cmLeft);
+ 
+  delay(1000);
+
 }
