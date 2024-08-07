@@ -15,7 +15,7 @@
 
 _24/06/2024_
 
-Aun sigo probando como utilizar el sensor SHARP con arduino, en una primera instancia solo me da lecturas erroneas.
+Probando como utilizar el sensor SHARP con arduino, en una primera instancia solo me da lecturas erroneas.
 
 _31/07/2024_
 
