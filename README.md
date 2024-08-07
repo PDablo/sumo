@@ -49,5 +49,4 @@ El sumo ya quedo montado con sus respectivos motores, puente H, sensores sharp y
 
 ---
 
-## Contacto
-Si te interesa colaborar o trabajar en conjunto con este o proyecto similar, podemos hablar por telegram @PDablo07
+
