@@ -28,13 +28,17 @@
 
 //---MOTORES---//
 #define motorLeftPin 2       //PIN DIGITAL PARA CONTROL DE MOTOR IZQUIERDO
+#define motorLeftPinB 4
 #define motorRightPin 3      //PIN DIGITAL PARA CONTROL DE MOTOR DERECHO
+#define motorRightPinB 5
 
 
 //#define DEBUG_SEARCH        //macro que activa la funcin de busqueda del SUMO
 //#define DEBUG_SHARP   //macro que activa la funcion para mostrar las lecturas del sensor SHARP
 //#define DEBUG_CENTER  //macro que avtiva la funcion para centrar un objeto
-
+#define MOTOR_TEST
+#define DELAY_TEST 500
+#define D_FRENO 500
 #define LINE 500    //valor de umbral para detectar linea blanca
 
 void setup() {
@@ -50,6 +54,8 @@ void setup() {
   //---DEFINICION DE PINES PARA MOTORES---//
   pinMode(motorLeftPin, OUTPUT);
   pinMode(motorRightPin, OUTPUT);
+  pinMode(motorLeftPinB, OUTPUT);
+  pinMode(motorRightPinB, OUTPUT);
   
 }
 
@@ -60,7 +66,7 @@ float medicion (int sensorPin, int n){
   }
   float promedio = suma/n;
   float distancia = 17569.7 * pow(promedio, -1.2062);
-  /*
+   /*
   * Debo corregir el codigo anterior adaptando:
   * 
   * int rawValue = analogRead(sensorPin);
@@ -88,15 +94,27 @@ float medicion (int sensorPin, int n){
 void center( int vR, int vL){
   if (vL < vR) {
     digitalWrite(motorLeftPin, HIGH);
+    digitalWrite(motorLeftPinB, LOW);
+    
     Serial.print("Motor Izq\n");
+    
     digitalWrite(motorRightPin, LOW);
+    digitalWrite(motorRightPinB, HIGH);
+  
   } else if (vL > vR) {
+  
     digitalWrite(motorLeftPin, LOW);
+    digitalWrite(motorLeftPinB, HIGH);
+    
     digitalWrite(motorRightPin, HIGH);
+    digitalWrite(motorRightPinB, LOW);
+    
     Serial.print("Motor Der\n");
   } else {
     digitalWrite(motorLeftPin, HIGH);
+    digitalWrite(motorLeftPinB, LOW);
     digitalWrite(motorRightPin, HIGH);
+    digitalWrite(motorRightPinB, LOW);
     Serial.print("Adelante\n");
   }
 }
@@ -138,6 +156,53 @@ void safe(){
  }
 
 */
+void freno(){
+    digitalWrite(motorLeftPin, LOW);
+    digitalWrite(motorLeftPinB, LOW);
+    digitalWrite(motorRightPin, LOW);
+    digitalWrite(motorRightPinB, LOW);
+    delay(D_FRENO);
+}
+
+void F_motorLeft(){
+    Serial.print("Motor Izq\n");
+    delay(100);
+    digitalWrite(motorLeftPin, HIGH);
+    digitalWrite(motorLeftPinB, LOW);
+    digitalWrite(motorRightPin, LOW);
+    digitalWrite(motorRightPinB, HIGH);  
+}
+void F_motorRight(){
+    Serial.print("Motor Der\n");
+    delay(100);
+    digitalWrite(motorLeftPin, LOW);
+    digitalWrite(motorLeftPinB, HIGH);
+    digitalWrite(motorRightPin, HIGH);
+    digitalWrite(motorRightPinB, LOW);
+}
+void F_motors(){
+    Serial.print("ADELANTE\n");
+    delay(100);
+    digitalWrite(motorLeftPin, HIGH);
+    digitalWrite(motorLeftPinB, LOW);
+    digitalWrite(motorRightPin, HIGH);
+    digitalWrite(motorRightPinB, LOW);
+}
+void motor_test(){
+    F_motorLeft();
+    delay(DELAY_TEST);
+    freno();
+    
+    F_motorRight();
+    delay(DELAY_TEST);
+    freno();
+    
+    F_motors();
+    delay(DELAY_TEST);
+    freno();
+    
+}
+
 void loop() {
   int cmLeft = medicion(sensorLeftPin, 20); // funcion   que tomara 20 muestras
   int cmRight = medicion(sensorRightPin, 20); // funcion   que tomara 20 muestras
@@ -159,7 +224,10 @@ void loop() {
   #ifdef DEBUG_SEARCH
   //search();
   #endif
-  safe();
+  //safe();
+  #ifdef MOTOR_TEST
+  motor_test();
+  #endif
   delay(1000);
 
 }
