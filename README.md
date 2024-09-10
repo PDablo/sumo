@@ -41,6 +41,17 @@ _31/07/2024_
 
 El sumo ya quedo montado con sus respectivos motores, puente H, sensores sharp y arduino; de momento solo funciona conectado a una fuente de alimentacion.
 
+_10/09/2024_
+
+Cada sensor SHARP consume, en promedio, 33mA en rafagas cortas y grandes (el fabricante recomienda colocar un capacitor de
+10 µF o más grande entre la alimentación y la tierra cerca del sensor para
+estabilizar la línea de suministro de energía)
+
+Cada sensro CNY70 tiene una Ic = 50mA (MAX) y calculamos aproximadamente 20mA para el led IR, por ende cada sensor consumiria aproximadamente 70mA
+
+Segun la web: https://docs.arduino.cc/hardware/uno-rev3/#tech-specs
+La corriente maxima DC para I/O pines es de 20mA. Por lo que sera necesario agregar una alimentacion externa tambien para los sensores.
+
 ---
 
 ## Sobre el autor
