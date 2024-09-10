@@ -60,6 +60,28 @@ float medicion (int sensorPin, int n){
   }
   float promedio = suma/n;
   float distancia = 17569.7 * pow(promedio, -1.2062);
+  /*
+  * Debo corregir el codigo anterior adaptando:
+  * 
+  * int rawValue = analogRead(sensorPin);
+  * float volt = rawValue * (5.0 / 1023.0);
+  * distancia = 60,374 X POW(volt, -1,16)
+  *
+  * Donde:
+  * como 'rawValue' es un valor analogico leido por el arduino
+  * y puede estar entre 0 y 1023 dependiendo su valor; se multiplica
+  * por '5.0' siendo este los 5V de referencia del arduino, y se divide 
+  * entre '1023.0' siendo el maximo posible que se podria tomar.
+  * es una regla de 3:
+  *    1023.5     --> 5V
+  *    rawValeue  --> ?      =>    (rawValue * 5V) / 1023.0
+  *
+  * Luego:
+  * la ecuacion "60,374 X POW(volt, -1,16)" es una formula empirica
+  * del sensor que indica la distancia en centimetros; siendo '60.374'
+  * un factor de ajuste que se obtiene a traves de la experimentacion y 
+  * '-1.16' indica la relacion inversa entre la tension y la distancia
+  */
   return(distancia);
 }
 
