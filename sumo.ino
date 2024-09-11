@@ -28,15 +28,17 @@
 
 //---MOTORES---//
 #define motorLeftPin 2       //PIN DIGITAL PARA CONTROL DE MOTOR IZQUIERDO
-#define motorLeftPinB 4
-#define motorRightPin 3      //PIN DIGITAL PARA CONTROL DE MOTOR DERECHO
+#define motorLeftPinB 3
+#define motorRightPin 4      //PIN DIGITAL PARA CONTROL DE MOTOR DERECHO
 #define motorRightPinB 5
 
 
 //#define DEBUG_SEARCH        //macro que activa la funcin de busqueda del SUMO
 //#define DEBUG_SHARP   //macro que activa la funcion para mostrar las lecturas del sensor SHARP
-//#define DEBUG_CENTER  //macro que avtiva la funcion para centrar un objeto
-#define MOTOR_TEST
+#define DEBUG_CENTER  //macro que avtiva la funcion para centrar un objeto
+//#define MOTOR_TEST
+//#define DEBUG_PRINT
+
 #define DELAY_TEST 500
 #define D_FRENO 500
 #define LINE 500    //valor de umbral para detectar linea blanca
@@ -91,31 +93,86 @@ float medicion (int sensorPin, int n){
   return(distancia);
 }
 
-void center( int vR, int vL){
-  if (vL < vR) {
+void F_motorLeft(){
+    #ifdef DEBUG_PRINT
+      Serial.print("Motor Izq\n");
+      delay(100);
+    #endif
+      
     digitalWrite(motorLeftPin, HIGH);
     digitalWrite(motorLeftPinB, LOW);
-    
-    Serial.print("Motor Izq\n");
-    
     digitalWrite(motorRightPin, LOW);
-    digitalWrite(motorRightPinB, HIGH);
-  
-  } else if (vL > vR) {
-  
+    digitalWrite(motorRightPinB, HIGH);  
+}
+
+void freno(){
+    digitalWrite(motorLeftPin, LOW);
+    digitalWrite(motorLeftPinB, LOW);
+    digitalWrite(motorRightPin, LOW);
+    digitalWrite(motorRightPinB, LOW);
+    delay(D_FRENO);
+}
+
+void F_motorRight(){
+    #ifdef DEBUG_PRINT
+      Serial.print("Motor Der\n");
+      delay(100);
+    #endif
+    
+    digitalWrite(motorLeftPin, LOW);    //PIN 2
+    digitalWrite(motorLeftPinB, HIGH);  //PIN 3
+    digitalWrite(motorRightPin, HIGH);  //PIN 4
+    digitalWrite(motorRightPinB, LOW);  //PIN 5
+}
+void F_motors(){
+    #ifdef DEBUG_PRINT
+      Serial.print("ADELANTE\n");
+      delay(100);
+    #endif
+    
+    digitalWrite(motorLeftPin, HIGH);
+    digitalWrite(motorLeftPinB, LOW);
+    digitalWrite(motorRightPin, HIGH);
+    digitalWrite(motorRightPinB, LOW);
+}
+
+void B_motors(){
     digitalWrite(motorLeftPin, LOW);
     digitalWrite(motorLeftPinB, HIGH);
-    
+    digitalWrite(motorRightPin, LOW);
+    digitalWrite(motorRightPinB, HIGH);
+}
+
+void center( int vR, int vL){
+  if (vL < vR) {
+    /*
+    Serial.print("Giro a la derecha\n");
+    digitalWrite(motorLeftPin, HIGH);
+    digitalWrite(motorLeftPinB, LOW);
+    digitalWrite(motorRightPin, LOW);
+    digitalWrite(motorRightPinB, HIGH);
+    */
+    F_motorLeft();
+           
+  } else if (vL > vR) {
+    /*
+    Serial.print("Giro a la izquierda\n");
+    digitalWrite(motorLeftPin, LOW);
+    digitalWrite(motorLeftPinB, HIGH);
     digitalWrite(motorRightPin, HIGH);
     digitalWrite(motorRightPinB, LOW);
+    */
+    F_motorRight();
     
-    Serial.print("Motor Der\n");
   } else {
+    /*
+    Serial.print("Avanzo\n");
     digitalWrite(motorLeftPin, HIGH);
     digitalWrite(motorLeftPinB, LOW);
     digitalWrite(motorRightPin, HIGH);
     digitalWrite(motorRightPinB, LOW);
-    Serial.print("Adelante\n");
+    */
+    F_motors();
   }
 }
 
@@ -127,22 +184,29 @@ void safe(){
   _back = analogRead(sensorBack); //lee la entrada del sensor
   _left = analogRead(sensorLeftF);
   _right = analogRead(sensorRightF);
-  
-  Serial.print("back: ");  //muestra por el monitor la lectura del sensor
-  Serial.println(_back);
 
-  Serial.print(" left: ");
-  Serial.print(_left);
+    #ifdef DEBUG_PRINT
+      Serial.print("back: ");  //muestra por el monitor la lectura del sensor
+      Serial.println(_back);
 
-  Serial.print(" right: ");
-  Serial.println(_right);
+      Serial.print(" left: ");
+      Serial.print(_left);
 
+      Serial.print(" right: ");
+      Serial.println(_right);
+    #endif
   
   if(_back > LINE){
-    Serial.println("Avanzo");
+    #ifdef DEBUG_PRINT
+      Serial.println("Avanzo");
+    #endif
+    F_motors();
   }
   if(_left > LINE || _right > LINE){
-    Serial.println("Retrocedo");
+    #ifdef DEBUG_PRINT
+      Serial.println("Retrocedo");
+    #endif
+    B_motors();
   }
 }
 /*
@@ -150,44 +214,12 @@ void safe(){
  * 
  void search(){
    do{
-     digitalWrite(motorLeftPin, HIGH);
-     digitalWrite(motorRightPin, HIGH);
+   F_motorRight();
    }while(
  }
 
 */
-void freno(){
-    digitalWrite(motorLeftPin, LOW);
-    digitalWrite(motorLeftPinB, LOW);
-    digitalWrite(motorRightPin, LOW);
-    digitalWrite(motorRightPinB, LOW);
-    delay(D_FRENO);
-}
 
-void F_motorLeft(){
-    Serial.print("Motor Izq\n");
-    delay(100);
-    digitalWrite(motorLeftPin, HIGH);
-    digitalWrite(motorLeftPinB, LOW);
-    digitalWrite(motorRightPin, LOW);
-    digitalWrite(motorRightPinB, HIGH);  
-}
-void F_motorRight(){
-    Serial.print("Motor Der\n");
-    delay(100);
-    digitalWrite(motorLeftPin, LOW);
-    digitalWrite(motorLeftPinB, HIGH);
-    digitalWrite(motorRightPin, HIGH);
-    digitalWrite(motorRightPinB, LOW);
-}
-void F_motors(){
-    Serial.print("ADELANTE\n");
-    delay(100);
-    digitalWrite(motorLeftPin, HIGH);
-    digitalWrite(motorLeftPinB, LOW);
-    digitalWrite(motorRightPin, HIGH);
-    digitalWrite(motorRightPinB, LOW);
-}
 void motor_test(){
     F_motorLeft();
     delay(DELAY_TEST);
@@ -222,12 +254,20 @@ void loop() {
   #endif
 
   #ifdef DEBUG_SEARCH
-  //search();
+    //search();
   #endif
-  //safe();
+  
+    safe();
+  
   #ifdef MOTOR_TEST
-  motor_test();
+    //motor_test();
+    F_motorRight();
+    delay(1000);
+    F_motorLeft();
+    delay(1000);
+    F_motors();
   #endif
+  
   delay(1000);
 
 }
